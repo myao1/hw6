@@ -88,5 +88,5 @@ void addMouseWheelListener(){
 }
 
 void draw(){
-  background(128);
+  background(255);
 }

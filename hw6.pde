@@ -4,11 +4,14 @@ Table table;
 ArrayList<State> stateArray;
 DropdownList stateMenu;
 Slider filter;
+String s;
+String currentState;
 
 void setup(){
   size(700, 700,P3D);
   cp5 = new ControlP5(this);
-  
+  s = "How\nPeople\nGet\nTo\nWork";
+
   stateMenu = cp5.addDropdownList("myList-d1").setPosition(500, 350);
   filter = cp5.addSlider("filter").setPosition(670, 400).setSize(20,250).setRange(0,100).setValue(50);
   cp5.getController("filter").getValueLabel().align(ControlP5.RIGHT, ControlP5.RIGHT_OUTSIDE).setPaddingX(0);
@@ -34,12 +37,8 @@ void setup(){
   customize(stateMenu, stateArray);
   addMouseWheelListener();
   
-  /*
-  for(int i =0; i < stateArray.size(); i++){
-    println("state: " + stateArray.get(i).state + " totalWorkers: " + stateArray.get(i).totalWorkers + " drove alone: " + 
-    stateArray.get(i).droveAlone);
-  }
-  */
+  fill(0);
+  textSize(40);
   
 }
 
@@ -89,4 +88,6 @@ void addMouseWheelListener(){
 
 void draw(){
   background(255);
+  text(s, 5,50); 
+
 }

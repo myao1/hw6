@@ -1,4 +1,7 @@
 import controlP5.*;
+import java.util.List;
+
+
 ControlP5 cp5;
 Table table;
 ArrayList<State> stateArray;
@@ -7,6 +10,9 @@ Slider filter;
 String s;
 String currentState;
 int percent;
+
+
+
 
 void setup(){
   size(700, 700,P3D);
@@ -22,6 +28,7 @@ void setup(){
   getData();
   
   addMouseWheelListener();
+  
   
   fill(0);
   textSize(40);
@@ -49,6 +56,8 @@ void customize(DropdownList ddl, ArrayList<State> states) {
   ddl.setColorBackground(color(40));
   ddl.setColorActive(color(0, 128));
 }
+
+
 
 void getData(){
   table = loadTable("CommuterData.csv", "header");
@@ -101,13 +110,33 @@ void addMouseWheelListener(){
   });
 }
 
+
+
+
 void doPercentage(){
+  
+  int rectWidth = 30;
+  int rectDefaultHeight = 10;
+  
+  stroke(0);
+  fill(255);
+  
+  //Drove Alone
   Percentage droveAlonePercent = new Percentage( stateArray ,"DroveAlone");
-  droveAlonePercent.calculatePercentage(percent);
+  List <StatePercent> droveAloneList = droveAlonePercent.calculatePercentage(percent);
+  int currentX = 50;
+  for(int i = 0; i < 3; i++){
+      rect(currentX, 400, rectWidth, (float)(rectDefaultHeight * droveAloneList.get(i).percent));
+      currentX += rectWidth;
+  } 
+  
+  
+
 }
 
 void draw(){
   background(255);
+  fill(0);
   text(s, 5,50); 
   
   doPercentage();

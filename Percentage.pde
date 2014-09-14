@@ -19,8 +19,8 @@ class Percentage{
     
   }
   
-  //returns sorted ArrayList of percentages with states, List<StatePercent>
-  public void calculatePercentage(int p){    
+  //returns sorted ArrayList of percentages with states
+  public List<StatePercent> calculatePercentage(int p){    
     
     double percentage = p / 100.0;
     int totalInUs = stateArray.get(0).totalWorkers;
@@ -59,6 +59,8 @@ class Percentage{
     else if(commuteCategory.equals("Home")){
     
     }
+    
+    return percentArray;
     
   }
   

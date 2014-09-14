@@ -82,13 +82,13 @@ void controlEvent(ControlEvent theEvent) {
 
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
-    println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
+    //println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
     int index = (int)theEvent.getGroup().getValue();
     currentState = stateArray.get(index).state;
-    println(currentState);
+    //println(currentState);
   } 
   else if (theEvent.isController()) {
-    println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
+    //println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
     percentage = (int)theEvent.getController().getValue();
   }
 }
@@ -101,9 +101,16 @@ void addMouseWheelListener(){
   });
 }
 
+void doPercentage(){
+  Percentage droveAlonePercent = new Percentage( stateArray ,"DroveAlone");
+  droveAlonePercent.calculatePercentage();
+}
+
 void draw(){
   background(255);
   text(s, 5,50); 
   
-  
+  doPercentage();
 }
+
+

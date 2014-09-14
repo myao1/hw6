@@ -6,36 +6,21 @@ DropdownList stateMenu;
 Slider filter;
 String s;
 String currentState;
+int percentage;
 
 void setup(){
   size(700, 700,P3D);
   cp5 = new ControlP5(this);
   s = "How\nPeople\nGet\nTo\nWork";
-
+  
   stateMenu = cp5.addDropdownList("myList-d1").setPosition(500, 350);
-  filter = cp5.addSlider("filter").setPosition(670, 400).setSize(20,250).setRange(0,100).setValue(50);
+ 
+  filter = cp5.addSlider("filter").setPosition(670, 400).setSize(20,250).setRange(0,100).setValue(100);
   cp5.getController("filter").getValueLabel().align(ControlP5.RIGHT, ControlP5.RIGHT_OUTSIDE).setPaddingX(0);
   cp5.getController("filter").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
   
-  table = loadTable("CommuterData.csv", "header");
-  stateArray = new ArrayList<State>();
+  getData();
   
-  for(TableRow row : table.rows()){
-    String state = row.getString("State");
-    String abbreviation = row.getString("Abbreviation");
-    int totalWorkers = row.getInt("Total Workers");
-    int droveAlone = row.getInt("Drove Alone");
-    int carPooled = row.getInt("Car-pooled");
-    int publicTransport = row.getInt("Used Public Transportation");
-    int walked = row.getInt("Walked");
-    int other = row.getInt("Other");
-    int workedAtHome = row.getInt("Worked at home");
-    double meanMinutesToWork = row.getDouble("Mean travel time to work (minutes)");
-    
-    stateArray.add(new State(state,abbreviation, totalWorkers,droveAlone,carPooled,publicTransport,walked,other,workedAtHome,meanMinutesToWork));
-  }
-  
-  customize(stateMenu, stateArray);
   addMouseWheelListener();
   
   fill(0);
@@ -43,6 +28,9 @@ void setup(){
   
 }
 
+
+
+//dropdown menu
 void customize(DropdownList ddl, ArrayList<State> states) {
   // a convenience function to customize a DropdownList
   ddl.setBackgroundColor(color(130));
@@ -62,6 +50,28 @@ void customize(DropdownList ddl, ArrayList<State> states) {
   ddl.setColorActive(color(0, 128));
 }
 
+void getData(){
+  table = loadTable("CommuterData.csv", "header");
+  stateArray = new ArrayList<State>();
+  
+  for(TableRow row : table.rows()){
+    String state = row.getString("State");
+    String abbreviation = row.getString("Abbreviation");
+    int totalWorkers = row.getInt("Total Workers");
+    int droveAlone = row.getInt("Drove Alone");
+    int carPooled = row.getInt("Car-pooled");
+    int publicTransport = row.getInt("Used Public Transportation");
+    int walked = row.getInt("Walked");
+    int other = row.getInt("Other");
+    int workedAtHome = row.getInt("Worked at home");
+    double meanMinutesToWork = row.getDouble("Mean travel time to work (minutes)");
+    
+    stateArray.add(new State(state,abbreviation, totalWorkers,droveAlone,carPooled,publicTransport,walked,other,workedAtHome,meanMinutesToWork));
+  }
+  
+  customize(stateMenu, stateArray);
+}
+
 
 void controlEvent(ControlEvent theEvent) {
   // DropdownList is of type ControlGroup.
@@ -73,9 +83,13 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
     println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
+    int index = (int)theEvent.getGroup().getValue();
+    currentState = stateArray.get(index).state;
+    println(currentState);
   } 
   else if (theEvent.isController()) {
     println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
+    percentage = (int)theEvent.getController().getValue();
   }
 }
 
@@ -90,5 +104,6 @@ void addMouseWheelListener(){
 void draw(){
   background(255);
   text(s, 5,50); 
-
+  
+  
 }

@@ -6,7 +6,7 @@ DropdownList stateMenu;
 Slider filter;
 String s;
 String currentState;
-int percentage;
+int percent;
 
 void setup(){
   size(700, 700,P3D);
@@ -89,7 +89,7 @@ void controlEvent(ControlEvent theEvent) {
   } 
   else if (theEvent.isController()) {
     //println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
-    percentage = (int)theEvent.getController().getValue();
+    percent = (int)theEvent.getController().getValue();
   }
 }
 
@@ -103,7 +103,7 @@ void addMouseWheelListener(){
 
 void doPercentage(){
   Percentage droveAlonePercent = new Percentage( stateArray ,"DroveAlone");
-  droveAlonePercent.calculatePercentage();
+  droveAlonePercent.calculatePercentage(percent);
 }
 
 void draw(){

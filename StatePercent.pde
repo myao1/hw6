@@ -1,9 +1,9 @@
 class StatePercent{
   
   String state;
-  int percent;
+  double percent;
   
-  public StatePercent(String state, int percent){
+  public StatePercent(String state, double percent){
     this.state = state;
     this.percent = percent;
     

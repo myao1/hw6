@@ -20,16 +20,17 @@ class Percentage{
   }
   
   //returns sorted ArrayList of percentages with states, List<StatePercent>
-  public void calculatePercentage(){    
+  public void calculatePercentage(int p){    
     
+    double percentage = p / 100.0;
+    int totalInUs = stateArray.get(0).totalWorkers;
+
     if(commuteCategory.equals("DroveAlone")){
-      int totalUS = stateArray.get(0).droveAlone;//in US total
       
       for(int i = 1; i < stateArray.size(); i++){
-        int numberOfWorkers = stateArray.get(i).droveAlone;
-        int timesPercent = numberOfWorkers * 100;
-        int percent = timesPercent / totalUS;
-        
+        double numberOfWorkers = stateArray.get(i).droveAlone * percentage;
+        double timesPercent = numberOfWorkers * 100;
+        double percent = (timesPercent * 1.0) / totalInUs;
         percentArray.add(new StatePercent(stateArray.get(i).abbreviation, percent));
       }
       
@@ -41,7 +42,8 @@ class Percentage{
       }
       println("----------------------------");
       
-    }
+    }//end drove alone
+    
     else if(commuteCategory.equals("CarPooled")){
     
     }

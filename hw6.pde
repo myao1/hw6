@@ -22,6 +22,7 @@ void setup(){
   
   for(TableRow row : table.rows()){
     String state = row.getString("State");
+    String abbreviation = row.getString("Abbreviation");
     int totalWorkers = row.getInt("Total Workers");
     int droveAlone = row.getInt("Drove Alone");
     int carPooled = row.getInt("Car-pooled");
@@ -31,7 +32,7 @@ void setup(){
     int workedAtHome = row.getInt("Worked at home");
     double meanMinutesToWork = row.getDouble("Mean travel time to work (minutes)");
     
-    stateArray.add(new State(state,totalWorkers,droveAlone,carPooled,publicTransport,walked,other,workedAtHome,meanMinutesToWork));
+    stateArray.add(new State(state,abbreviation, totalWorkers,droveAlone,carPooled,publicTransport,walked,other,workedAtHome,meanMinutesToWork));
   }
   
   customize(stateMenu, stateArray);

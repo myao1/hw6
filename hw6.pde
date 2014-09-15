@@ -7,6 +7,7 @@ import org.gicentre.utils.colour.*;
 ControlP5 cp5;
 Table table;
 ArrayList<State> stateArray;
+int stateIndex = 0;
 PTreeMappa totalTreeMap;
 DropdownList stateMenu;
 Slider filter;
@@ -42,6 +43,7 @@ void createTreemap(){
   totalTreeMap = new PTreeMappa(this);
   //totalTreeMap.readData("CommuterData.csv");
   
+  //State current = stateArray.get(stateIndex);
   State USA = stateArray.get(0);
   int commute = USA.droveAlone + USA.carPooled + USA.publicTransport;
   int noCar = USA.walked + USA.other + USA.workedAtHome;
@@ -142,8 +144,8 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
     //println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
-    int index = (int)theEvent.getGroup().getValue();
-    currentState = stateArray.get(index).state;
+    stateIndex = (int)theEvent.getGroup().getValue();
+    currentState = stateArray.get(stateIndex).state;
     //println(currentState);
   } 
   else if (theEvent.isController()) {

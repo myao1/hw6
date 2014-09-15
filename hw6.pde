@@ -117,18 +117,135 @@ void doPercentage(){
   
   int rectWidth = 30;
   int rectDefaultHeight = 10;
-  
-  stroke(0);
-  fill(255);
+  int currentX = 10; 
+  int xIncrement = 15;
+  int yRect = 440;
   
   //Drove Alone
+  String text1 = "Drove Alone";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text1, currentX, yRect - 22);
+  
   Percentage droveAlonePercent = new Percentage( stateArray ,"DroveAlone");
   List <StatePercent> droveAloneList = droveAlonePercent.calculatePercentage(percent);
-  int currentX = 50;
+  
+  
   for(int i = 0; i < 3; i++){
-      rect(currentX, 400, rectWidth, (float)(rectDefaultHeight * droveAloneList.get(i).percent));
+      fill(0);
+      String stateInitials = droveAloneList.get(i).state;
+      text(stateInitials, currentX,yRect - 5);
+      fill(255);
+      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * droveAloneList.get(i).percent));
       currentX += rectWidth;
   } 
+  
+  
+  currentX += xIncrement;
+  
+  //Car pooled
+  String text2 = "Car Pooled";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text2, currentX, yRect - 22);
+  
+  Percentage CarPooledPercent = new Percentage( stateArray ,"CarPooled");
+  List <StatePercent> CarPooledList = CarPooledPercent.calculatePercentage(percent);
+  
+  for(int i = 0; i < 3; i++){
+      fill(0);
+      String stateInitials = CarPooledList.get(i).state;
+      text(stateInitials, currentX,yRect - 5);
+      fill(255);
+      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * CarPooledList.get(i).percent));
+      currentX += rectWidth;
+  }
+  
+  currentX += xIncrement;
+  
+  //public trans
+  String text3 = "Public Trans";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text3, currentX, yRect - 22);
+  
+  Percentage PublicTransPercent = new Percentage( stateArray ,"PublicTrans");
+  List <StatePercent> PublicTransList = PublicTransPercent.calculatePercentage(percent);
+  
+  for(int i = 0; i < 3; i++){
+      fill(0);
+      String stateInitials = PublicTransList.get(i).state;
+      text(stateInitials, currentX,yRect - 5);
+      fill(255);
+      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * PublicTransList.get(i).percent));
+      currentX += rectWidth;
+  }
+  
+  currentX += xIncrement;
+  
+  //walked
+  String text4 = "Walked";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text4, currentX, yRect - 22);
+  
+  Percentage WalkedPercent = new Percentage( stateArray ,"Walked");
+  List <StatePercent> WalkedList = WalkedPercent.calculatePercentage(percent);
+  
+  for(int i = 0; i < 3; i++){
+      fill(0);
+      String stateInitials = WalkedList.get(i).state;
+      text(stateInitials, currentX,yRect - 5);
+      fill(255);
+      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * WalkedList.get(i).percent));
+      currentX += rectWidth;
+  }
+  
+  currentX += xIncrement;
+  
+  //other
+  String text5 = "Other";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text5, currentX, yRect - 22);
+  
+  Percentage OtherPercent = new Percentage( stateArray ,"Other");
+  List <StatePercent> OtherList = OtherPercent.calculatePercentage(percent);
+  
+  for(int i = 0; i < 3; i++){
+      fill(0);
+      String stateInitials = OtherList.get(i).state;
+      text(stateInitials, currentX,yRect - 5);
+      fill(255);
+      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * OtherList.get(i).percent));
+      currentX += rectWidth;
+  }
+  
+  currentX += xIncrement;
+  
+  //Home
+  String text6 = "Home";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text6, currentX, yRect - 22);
+  
+  Percentage HomePercent = new Percentage( stateArray ,"Other");
+  List <StatePercent> HomeList = HomePercent.calculatePercentage(percent);
+  
+  for(int i = 0; i < 3; i++){
+      fill(0);
+      String stateInitials = HomeList.get(i).state;
+      text(stateInitials, currentX,yRect - 5);
+      fill(255);
+      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * HomeList.get(i).percent));
+      currentX += rectWidth;
+  }
   
   
 
@@ -137,6 +254,7 @@ void doPercentage(){
 void draw(){
   background(255);
   fill(0);
+  textSize(40);
   text(s, 5,50); 
   
   doPercentage();

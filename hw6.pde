@@ -15,7 +15,7 @@ int percent;
 
 
 void setup(){
-  size(700, 700,P3D);
+  size(700, 680,P3D);
   cp5 = new ControlP5(this);
   s = "How\nPeople\nGet\nTo\nWork";
   
@@ -116,8 +116,8 @@ void addMouseWheelListener(){
 void doPercentage(){
   
   int rectWidth = 30;
-  int rectDefaultHeight = 10;
-  int currentX = 10; 
+  int rectDefaultHeight = 18;
+  int currentX = 18; 
   int xIncrement = 15;
   int yRect = 440;
   

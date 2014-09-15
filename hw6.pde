@@ -7,6 +7,7 @@ import org.gicentre.utils.colour.*;
 ControlP5 cp5;
 Table table;
 ArrayList<State> stateArray;
+PTreeMappa totalTreeMap;
 DropdownList stateMenu;
 Slider filter;
 String s;
@@ -27,20 +28,17 @@ void setup(){
   cp5.getController("filter").getValueLabel().align(ControlP5.RIGHT, ControlP5.RIGHT_OUTSIDE).setPaddingX(0);
   cp5.getController("filter").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
   
-  getData(); //<>//
+  getData();
   
   addMouseWheelListener();
-  
-  createTreemap();
-  
+  createTreemap(); //<>//
+  System.out.println("test"); //<>//
   fill(0);
   textSize(40);
   
 }
 
-void createTreemap(){
-  PTreeMappa totalTreeMap;
- 
+void createTreemap(){  
   totalTreeMap = new PTreeMappa(this);
   //totalTreeMap.readData("CommuterData.csv");
   
@@ -50,14 +48,19 @@ void createTreemap(){
   int total = USA.totalWorkers;
   double travelTime = USA.meanMinutesToWork; 
   
+  //root node of the state
   TreeMapNode testUSA = new TreeMapNode(USA.abbreviation, 0.0, (float)total, (float)color(255,255,100));
+  
+  //first two children
   TreeMapNode cars = new TreeMapNode("Driving", 1.0, (float)commute, (float)color(100, 255, 255));
   TreeMapNode noCarNode = new TreeMapNode("Not Driving", 1.0, (float)noCar, (float)color(255, 100, 100));
   
+  //three children under cars node
   TreeMapNode droveAlone = new TreeMapNode("Drove Alone", 0.0, (float)USA.droveAlone, (float)color(30, 30, 30));
   TreeMapNode carPool = new TreeMapNode("Carpooled", 0.0, (float)USA.carPooled, (float)color(20, 20, 20));
   TreeMapNode publicTrans = new TreeMapNode("Public Transportation", 0.0, (float)USA.publicTransport, (float)color(30, 30, 30));
   
+  //three children under noCars node
   TreeMapNode walk = new TreeMapNode("Walked", 0.0, (float)USA.walked, (float)color(70, 70, 70));
   TreeMapNode other = new TreeMapNode("Other", 0.0, (float)USA.other, (float)color(80, 80, 80));
   TreeMapNode home = new TreeMapNode("Worked at Home", 0.0, (float)USA.workedAtHome, (float)color(80, 80, 80));
@@ -72,11 +75,12 @@ void createTreemap(){
   
   testUSA.add(cars);
   testUSA.add(noCarNode);
+  totalTreeMap.getTreeMappa().setRoot(testUSA);
+  totalTreeMap.getTreeMappa().buildTreeMap();
   
-  TreeMapNode rootNode = testUSA;
   
-  totalTreeMap.getTreeMapPanel().setBorders(4);
-  totalTreeMap.getTreeMapPanel().setBorder(0,0);
+//  totalTreeMap.getTreeMapPanel().setBorders(4);
+//  totalTreeMap.getTreeMapPanel().setBorder(0,0);
   
   //totalTreeMap.draw(); 
   

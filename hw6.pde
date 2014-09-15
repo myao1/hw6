@@ -1,5 +1,7 @@
 import controlP5.*;
 import java.util.List;
+import org.gicentre.treemappa.*;
+import org.gicentre.utils.colour.*;
 
 
 ControlP5 cp5;
@@ -19,28 +21,72 @@ void setup(){
   cp5 = new ControlP5(this);
   s = "How\nPeople\nGet\nTo\nWork";
   
-  stateMenu = cp5.addDropdownList("myList-d1").setPosition(500, 350);
+  stateMenu = cp5.addDropdownList("myList-d1").setPosition(500, 40);
  
   filter = cp5.addSlider("filter").setPosition(670, 400).setSize(20,250).setRange(0,100).setValue(100);
   cp5.getController("filter").getValueLabel().align(ControlP5.RIGHT, ControlP5.RIGHT_OUTSIDE).setPaddingX(0);
   cp5.getController("filter").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
   
-  getData();
+  getData(); //<>//
   
   addMouseWheelListener();
   
+  createTreemap();
   
   fill(0);
   textSize(40);
   
 }
 
+void createTreemap(){
+  PTreeMappa totalTreeMap;
+ 
+  totalTreeMap = new PTreeMappa(this);
+  //totalTreeMap.readData("CommuterData.csv");
+  
+  State USA = stateArray.get(0);
+  int commute = USA.droveAlone + USA.carPooled + USA.publicTransport;
+  int noCar = USA.walked + USA.other + USA.workedAtHome;
+  int total = USA.totalWorkers;
+  double travelTime = USA.meanMinutesToWork; 
+  
+  TreeMapNode testUSA = new TreeMapNode(USA.abbreviation, 0.0, (float)total, (float)color(255,255,100));
+  TreeMapNode cars = new TreeMapNode("Driving", 1.0, (float)commute, (float)color(100, 255, 255));
+  TreeMapNode noCarNode = new TreeMapNode("Not Driving", 1.0, (float)noCar, (float)color(255, 100, 100));
+  
+  TreeMapNode droveAlone = new TreeMapNode("Drove Alone", 0.0, (float)USA.droveAlone, (float)color(30, 30, 30));
+  TreeMapNode carPool = new TreeMapNode("Carpooled", 0.0, (float)USA.carPooled, (float)color(20, 20, 20));
+  TreeMapNode publicTrans = new TreeMapNode("Public Transportation", 0.0, (float)USA.publicTransport, (float)color(30, 30, 30));
+  
+  TreeMapNode walk = new TreeMapNode("Walked", 0.0, (float)USA.walked, (float)color(70, 70, 70));
+  TreeMapNode other = new TreeMapNode("Other", 0.0, (float)USA.other, (float)color(80, 80, 80));
+  TreeMapNode home = new TreeMapNode("Worked at Home", 0.0, (float)USA.workedAtHome, (float)color(80, 80, 80));
+  
+  cars.add(droveAlone);
+  cars.add(carPool);
+  cars.add(publicTrans);
+  
+  noCarNode.add(walk);
+  noCarNode.add(other);
+  noCarNode.add(home);
+  
+  testUSA.add(cars);
+  testUSA.add(noCarNode);
+  
+  TreeMapNode rootNode = testUSA;
+  
+  totalTreeMap.getTreeMapPanel().setBorders(4);
+  totalTreeMap.getTreeMapPanel().setBorder(0,0);
+  
+  //totalTreeMap.draw(); 
+  
+}
 
 
 //dropdown menu
 void customize(DropdownList ddl, ArrayList<State> states) {
   // a convenience function to customize a DropdownList
-  ddl.setBackgroundColor(color(130));
+  ddl.setBackgroundColor(color(30, 150, 150));
   ddl.setWidth(160);
   ddl.setItemHeight(20);
   ddl.setBarHeight(15);
@@ -259,5 +305,3 @@ void draw(){
   
   doPercentage();
 }
-
-

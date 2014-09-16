@@ -16,6 +16,17 @@ String selectedState = "";
 RadioButton r;
 boolean percentageMode = false;
 
+//Colors
+color selColor = #000000;
+color unselColor = #FFFFFF;
+color driveAloneColor = #FF0000;
+color carPoolColor = #CC0099;
+color publicTransColor = #FF9966;
+color walkColor = #00FF99;
+color otherColor = #66FF33;
+color homeColor = #006600;
+
+
 
 void setup(){
   size(700, 680,P3D);
@@ -32,7 +43,7 @@ void setup(){
   
 }
 
-boolean overRect(int x, int y, int rwidth, int rheight) {
+boolean overRect(float x, float y, float rwidth, float rheight) {
   if (mouseX >= x && mouseX <= x+rwidth && 
       mouseY >= y && mouseY <= y+rheight) {
     return true;
@@ -97,29 +108,50 @@ void makeTreeMap(int state){
   int parentX = 160;
   int parentY = 60;
   
-  fill(255);
+  fill(unselColor);
   rect(parentX, parentY, parentWidth, parentHeight);
   rect(parentX, parentY, commutePercent*parentWidth, parentHeight);
   rect(parentX + commutePercent*parentWidth, parentY, noCarPercent*parentWidth, parentHeight);
   
-  fill(#FF0000);
+  fill(driveAloneColor);
   rect(parentX, parentY, commutePercent*parentWidth, driveAlone*parentHeight);
-  if(insideBox(parentX, parentY, commutePercent*parentWidth, driveAlone*parentHeight)){
+  if(overRect(parentX, parentY, commutePercent*parentWidth, driveAlone*parentHeight)){
     fill(0);
+    text(String.valueOf(USA.droveAlone), mouseX-20, mouseY-20, 100, 100);
   }
-  fill(#CC0099);
+  fill(carPoolColor);
   rect(parentX, parentY + driveAlone*parentHeight, commutePercent*parentWidth, carPool*parentHeight);
-  fill(#FF9966);
+  if(overRect(parentX, parentY + driveAlone*parentHeight, commutePercent*parentWidth, carPool*parentHeight)){
+    fill(0);
+    text(String.valueOf(USA.carPooled), mouseX-20, mouseY-20, 100, 100);
+  }
+  fill(publicTransColor);
   rect(parentX, parentY + driveAlone*parentHeight + carPool*parentHeight, commutePercent*parentWidth, pub*parentHeight);
+  if(overRect(parentX, parentY + driveAlone*parentHeight + carPool*parentHeight, commutePercent*parentWidth, pub*parentHeight)){
+    fill(0);
+    text(String.valueOf(USA.publicTransport), mouseX-20, mouseY-20, 100, 100);
+  }
   
-  fill(#00FF99);
+  fill(walkColor);
   rect(parentX + commutePercent*parentWidth, parentY, noCarPercent*parentWidth, walk*parentHeight);
-  fill(#66FF33);
+  if(overRect(parentX + commutePercent*parentWidth, parentY, noCarPercent*parentWidth, walk*parentHeight)){
+    fill(0);
+    text(String.valueOf(USA.walked), mouseX-20, mouseY-20, 100, 100);
+  }
+  fill(otherColor);
   rect(parentX + commutePercent*parentWidth, parentY + walk*parentHeight, noCarPercent*parentWidth, other*parentHeight);
-  fill(#006600);
+  if(overRect(parentX + commutePercent*parentWidth, parentY + walk*parentHeight, noCarPercent*parentWidth, other*parentHeight)){
+    fill(0);
+    text(String.valueOf(USA.other), mouseX-20, mouseY-20, 100, 100);
+  }
+  fill(homeColor);
   rect(parentX + commutePercent*parentWidth, parentY + walk*parentHeight + other*parentHeight, noCarPercent*parentWidth, home*parentHeight);  
+  if(overRect(parentX + commutePercent*parentWidth, parentY + walk*parentHeight + other*parentHeight, noCarPercent*parentWidth, home*parentHeight)){
+    fill(0);
+    text(String.valueOf(USA.workedAtHome), mouseX-20, mouseY-20, 100, 100);
+  }
   
-  fill(0);
+  fill(selColor);
   textSize(32);
   text(USA.state, 270, 40);
   textSize(12);
@@ -141,15 +173,7 @@ void createDetails(String statName, int value, int total){
   System.out.println(statName+": " + value+"\nTotal: " + total);
 }
 
-boolean insideBox(int XCorner, int YCorner, float boxWidth, float boxHeight){
-  
-  if(mouseX > XCorner && mouseX < XCorner+boxWidth && 
-     mouseY > YCorner && mouseY < YCorner+boxHeight){
-       return true;
-     }else{
-       return false;
-     }
-}
+
 
 //dropdown menu
 void customize(DropdownList ddl, ArrayList<State> states) {
@@ -290,10 +314,10 @@ void doPercentage(){
           if(hovering1 || selectedState.equals(droveAloneList.get(i).state)){
             droveAloneList.get(i).selected = true;
             selectedState = droveAloneList.get(i).state;
-            fill(0);
+            fill(driveAloneColor);
           }
           else{
-            fill(255);
+            fill(unselColor);
           }
           
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + droveAloneList.get(i).percent*2));
@@ -334,10 +358,10 @@ void doPercentage(){
         if(hovering2 || selectedState.equals(CarPooledList.get(i).state)){
           CarPooledList.get(i).selected = true;
           selectedState = CarPooledList.get(i).state;
-          fill(0);
+          fill(carPoolColor);
         }
         else{
-          fill(255);       
+          fill(unselColor);       
   
         }
         
@@ -377,10 +401,10 @@ void doPercentage(){
         if(hovering3 || selectedState.equals(PublicTransList.get(i).state)){
           PublicTransList.get(i).selected = true;
           selectedState = PublicTransList.get(i).state;
-          fill(0);
+          fill(publicTransColor);
         }
         else{
-          fill(255);       
+          fill(unselColor);       
         }
   
         rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + PublicTransList.get(i).percent*2));
@@ -420,10 +444,10 @@ void doPercentage(){
           if(hovering4 || selectedState.equals(WalkedList.get(i).state)){
             WalkedList.get(i).selected = true;
             selectedState = WalkedList.get(i).state;
-            fill(0);
+            fill(walkColor);
           }
           else{
-            fill(255);       
+            fill(unselColor);       
           }
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + WalkedList.get(i).percent*2));
           
@@ -462,10 +486,10 @@ void doPercentage(){
           if(hovering5 || selectedState.equals(OtherList.get(i).state)){
             OtherList.get(i).selected = true;
             selectedState = OtherList.get(i).state;
-            fill(0);
+            fill(otherColor);
           }
           else{
-            fill(255);       
+            fill(unselColor);       
           }
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + OtherList.get(i).percent*2));
           
@@ -505,10 +529,10 @@ void doPercentage(){
           if(hovering6 || selectedState.equals(HomeList.get(i).state)){
             HomeList.get(i).selected = true;
             selectedState = HomeList.get(i).state;
-            fill(0);
+            fill(homeColor);
           }
           else{
-            fill(255);       
+            fill(unselColor);       
           }
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + HomeList.get(i).percent*2));
           
@@ -564,10 +588,10 @@ void doPercentage(){
           if(hovering1 || selectedState.equals(droveAloneList.get(i).state)){
             droveAloneList.get(i).selected = true;
             selectedState = droveAloneList.get(i).state;
-            fill(0);
+            fill(driveAloneColor);
           }
           else{
-            fill(255);
+            fill(unselColor);
           }
           
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + droveAloneList.get(i).percent/ divided));
@@ -608,10 +632,10 @@ void doPercentage(){
         if(hovering2 || selectedState.equals(CarPooledList.get(i).state)){
           CarPooledList.get(i).selected = true;
           selectedState = CarPooledList.get(i).state;
-          fill(0);
+          fill(carPoolColor);
         }
         else{
-          fill(255);       
+          fill(unselColor);       
   
         }
         
@@ -651,10 +675,10 @@ void doPercentage(){
         if(hovering3 || selectedState.equals(PublicTransList.get(i).state)){
           PublicTransList.get(i).selected = true;
           selectedState = PublicTransList.get(i).state;
-          fill(0);
+          fill(publicTransColor);
         }
         else{
-          fill(255);       
+          fill(unselColor);       
         }
   
         rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + PublicTransList.get(i).percent/ divided));
@@ -694,10 +718,10 @@ void doPercentage(){
           if(hovering4 || selectedState.equals(WalkedList.get(i).state)){
             WalkedList.get(i).selected = true;
             selectedState = WalkedList.get(i).state;
-            fill(0);
+            fill(walkColor);
           }
           else{
-            fill(255);       
+            fill(unselColor);       
           }
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + WalkedList.get(i).percent/ divided));
           
@@ -736,10 +760,10 @@ void doPercentage(){
           if(hovering5 || selectedState.equals(OtherList.get(i).state)){
             OtherList.get(i).selected = true;
             selectedState = OtherList.get(i).state;
-            fill(0);
+            fill(otherColor);
           }
           else{
-            fill(255);       
+            fill(unselColor);       
           }
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + OtherList.get(i).percent/ divided));
           
@@ -779,10 +803,10 @@ void doPercentage(){
           if(hovering6 || selectedState.equals(HomeList.get(i).state)){
             HomeList.get(i).selected = true;
             selectedState = HomeList.get(i).state;
-            fill(0);
+            fill(walkColor);
           }
           else{
-            fill(255);       
+            fill(unselColor);       
           }
           rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + HomeList.get(i).percent/ divided));
           

@@ -6,7 +6,6 @@ ControlP5 cp5;
 Table table;
 ArrayList<State> stateArray;
 int stateIndex = 0;
-PTreeMappa totalTreeMap;
 DropdownList stateMenu;
 Slider filter;
 String s;
@@ -19,7 +18,6 @@ int percent;
 void setup(){
   size(700, 680,P3D);
   cp5 = new ControlP5(this);
-  totalTreeMap = new PTreeMappa(this);
   s = "How\nPeople\nGet\nTo\nWork";
   
   stateMenu = cp5.addDropdownList("myList-d1").setPosition(500, 40);
@@ -31,21 +29,14 @@ void setup(){
   getData();
   
   addMouseWheelListener();
-  //createTreemap();
-  //createRectangle();
-  System.out.println("test");
   fill(0);
   textSize(40);
   
 }
 
-void createRectangle(int stateIndex){
-  fill(255);
-  rect(160, 60, 500, 300);
+void makeTreeMap(int state){
   
-  State USA = stateArray.get(2);
-  fill(0);
-  text(USA.state, 270, 40);
+  State USA = stateArray.get(state);  
   int commute = USA.droveAlone + USA.carPooled + USA.publicTransport;
   int noCar = USA.walked + USA.other + USA.workedAtHome;
   int total = USA.totalWorkers;
@@ -61,33 +52,63 @@ void createRectangle(int stateIndex){
   float other = (float)USA.other/noCar;
   float home = (float)USA.workedAtHome/noCar;
   
+  int parentWidth = 500;
+  int parentHeight = 300;
+  int parentX = 160;
+  int parentY = 60;
   
+  fill(255);
+  rect(parentX, parentY, parentWidth, parentHeight);
+  rect(parentX, parentY, commutePercent*parentWidth, parentHeight);
+  rect(parentX + commutePercent*parentWidth, parentY, noCarPercent*parentWidth, parentHeight);
   
-  rect(160, 60, commutePercent*500, 300);
+  fill(#FF0000);
+  rect(parentX, parentY, commutePercent*parentWidth, driveAlone*parentHeight);
+  if(insideBox(parentX, parentY, commutePercent*parentWidth, driveAlone*parentHeight)){
+    fill(0);
+  }
+  fill(#CC0099);
+  rect(parentX, parentY + driveAlone*parentHeight, commutePercent*parentWidth, carPool*parentHeight);
+  fill(#FF9966);
+  rect(parentX, parentY + driveAlone*parentHeight + carPool*parentHeight, commutePercent*parentWidth, pub*parentHeight);
   
-  rect(160 + commutePercent*500, 60, noCarPercent*500, 300);
+  fill(#00FF99);
+  rect(parentX + commutePercent*parentWidth, parentY, noCarPercent*parentWidth, walk*parentHeight);
+  fill(#66FF33);
+  rect(parentX + commutePercent*parentWidth, parentY + walk*parentHeight, noCarPercent*parentWidth, other*parentHeight);
+  fill(#006600);
+  rect(parentX + commutePercent*parentWidth, parentY + walk*parentHeight + other*parentHeight, noCarPercent*parentWidth, home*parentHeight);  
+  
   fill(0);
-  text("Commuting", 160, 55);
-  text("No Car", 160+ commutePercent*500, 55);
+  textSize(32);
+  text(USA.state, 270, 40);
+  textSize(12);
+  text("Commuting", parentX, 55);
+  text("No Car", parentX+ commutePercent*parentWidth, 55);
   
-  fill(255,0,0);
-  rect(160, 60, commutePercent*500, driveAlone*300);
-  rect(160, 60+ driveAlone*300, commutePercent*500, carPool*300);
-  rect(160, 60+ driveAlone*300 + carPool*300, commutePercent*500, pub*300);
+  text("Drive Alone", parentX+5, parentY + (driveAlone*parentHeight)/2);
+  text("Carpool", parentX+5, parentY + driveAlone*parentHeight + (carPool*parentHeight)/1.5);
+  text("Public Transit", parentX+5, parentY + driveAlone*parentHeight + carPool*parentHeight + (pub*parentHeight)/1.2);
   
-  fill(0, 255, 0);
-  rect(160 + commutePercent*500, 60, noCarPercent*500, walk*300);
-  rect(160 + commutePercent*500, 60 + walk*300, noCarPercent*500, other*300);
-  rect(160 + commutePercent*500, 60 + walk*300 + other*300, noCarPercent*500, home*300);  
+  text("Walk", parentX + commutePercent*parentWidth, parentY + (walk*parentHeight)/2);
+  text("Other", parentX + commutePercent*parentWidth, parentY + walk*parentHeight + (other*parentHeight)/2);
+  text("Home", parentX + commutePercent*parentWidth, parentY + walk*parentHeight + other*parentHeight + (home*parentHeight)/2);
   
-  fill(0);
-  text("Drive Alone", 155, 60 + (driveAlone*300)/2);
-  text("Carpool", 155, 60 + driveAlone*300 + (carPool*300)/2);
-  text("Public Transit", 155, 60 + driveAlone*300 + carPool*300 + (pub*300)/2);
+}
+
+void createDetails(String statName, int value, int total){
+  rect(mouseX, mouseY-30, 50, 30);
+  System.out.println(statName+": " + value+"\nTotal: " + total);
+}
+
+boolean insideBox(int XCorner, int YCorner, float boxWidth, float boxHeight){
   
-  text("Walk", 160 + commutePercent*500, 60 + (walk*300)/2);
-  text("Other", 160 + commutePercent*500, 60 + walk*300 + (other*300)/2);
-  text("Home", 160 + commutePercent*500, 60 + walk*300 + other*300 + (home*300)/2);
+  if(mouseX > XCorner && mouseX < XCorner+boxWidth && 
+     mouseY > YCorner && mouseY < YCorner+boxHeight){
+       return true;
+     }else{
+       return false;
+     }
 }
 
 //dropdown menu
@@ -311,5 +332,5 @@ void draw(){
   text(s, 5,50); 
   
   doPercentage();
-  createRectangle(stateIndex);
+  makeTreeMap(stateIndex);
 }

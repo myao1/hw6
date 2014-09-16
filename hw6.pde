@@ -1,5 +1,6 @@
 import controlP5.*;
 import java.util.List;
+import java.text.*;
 
 
 ControlP5 cp5;
@@ -11,8 +12,9 @@ Slider filter;
 String s;
 String currentState;
 int percent;
-
-
+String selectedState = "";
+RadioButton r;
+boolean percentageMode = false;
 
 
 void setup(){
@@ -21,18 +23,56 @@ void setup(){
   s = "How\nPeople\nGet\nTo\nWork";
   
   stateMenu = cp5.addDropdownList("myList-d1").setPosition(500, 40);
- 
-  filter = cp5.addSlider("filter").setPosition(670, 400).setSize(20,250).setRange(0,100).setValue(100);
-  cp5.getController("filter").getValueLabel().align(ControlP5.RIGHT, ControlP5.RIGHT_OUTSIDE).setPaddingX(0);
-  cp5.getController("filter").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
-  
   getData();
+  numPerButtons();
   
   addMouseWheelListener();
   fill(0);
   textSize(40);
   
 }
+
+boolean overRect(int x, int y, int rwidth, int rheight) {
+  if (mouseX >= x && mouseX <= x+rwidth && 
+      mouseY >= y && mouseY <= y+rheight) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void slider(int range){
+  filter = cp5.addSlider("filter").setPosition(670, 400).setSize(20,250).setRange(0,range).setValue(range);
+  cp5.getController("filter").getValueLabel().align(ControlP5.RIGHT, ControlP5.RIGHT_OUTSIDE).setPaddingX(0);
+  cp5.getController("filter").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+}
+
+void numPerButtons(){
+  fill(0);
+  r = cp5.addRadioButton("radioButton")
+         .setPosition(450,620)
+         .setSize(40,20)
+         .setColorForeground(color(0))
+         .setColorActive(color(20))
+         .setColorLabel(color(255))
+         .setItemsPerRow(5)
+         .setSpacingColumn(60)
+         .addItem("Percentage",1)
+         .addItem("Numbers",2)
+       
+         ;
+     
+     for(Toggle t:r.getItems()) {
+       t.captionLabel().setColorBackground(color(0,80));
+       t.captionLabel().style().moveMargin(-7,0,0,-3);
+       t.captionLabel().style().movePadding(7,0,0,3);
+       t.captionLabel().style().backgroundWidth = 60;
+       t.captionLabel().style().backgroundHeight = 13;
+     }
+     
+     r.activate(0);
+}
+
 
 void makeTreeMap(int state){
   
@@ -162,7 +202,18 @@ void controlEvent(ControlEvent theEvent) {
   // therefore you need to check the originator of the Event with
   // if (theEvent.isGroup())
   // to avoid an error message thrown by controlP5.
-
+  
+  if(theEvent.isFrom(r)) {
+    percentageMode = !percentageMode;
+    if(!percentageMode){
+      slider(133091043);
+    }
+    else{
+      slider(100);
+    }
+    println("percentage mode: " + Boolean.toString(percentageMode));
+  }
+  
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
     //println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
@@ -186,78 +237,164 @@ void addMouseWheelListener(){
 
 
 
-
 void doPercentage(){
-  
   int rectWidth = 30;
-  int rectDefaultHeight = 18;
+  int rectDefaultHeight = 1;
   int currentX = 18; 
   int xIncrement = 15;
   int yRect = 440;
+  int detailsY = 28;
+  boolean hovering1 = false, hovering2 = false, hovering3 = false, hovering4 = false, hovering5 = false, hovering6 = false;
+  boolean hasSelected = false;
+  int count = 0;
   
-  //Drove Alone
+  Percentage droveAlonePercent = new Percentage( stateArray ,"DroveAlone");
+  
+  Percentage CarPooledPercent = new Percentage( stateArray ,"CarPooled");
+  
+  Percentage PublicTransPercent = new Percentage( stateArray ,"PublicTrans");
+  
+  Percentage WalkedPercent = new Percentage( stateArray ,"Walked");
+  
+  Percentage HomePercent = new Percentage( stateArray ,"Other");
+  
+  Percentage OtherPercent = new Percentage( stateArray ,"Other");
+  
+  List <StatePercent> droveAloneList,CarPooledList, PublicTransList, WalkedList, HomeList, OtherList;
+  
+  if(percentageMode){
+    droveAloneList = droveAlonePercent.calculatePercentage(percent);
+    CarPooledList = CarPooledPercent.calculatePercentage(percent);
+    PublicTransList = PublicTransPercent.calculatePercentage(percent);
+    WalkedList = WalkedPercent.calculatePercentage(percent);
+    HomeList = HomePercent.calculatePercentage(percent);
+    OtherList = OtherPercent.calculatePercentage(percent);
+    
+    //Drove Alone
   String text1 = "Drove Alone";
   textSize(12);
   stroke(0);
   fill(0);
   text(text1, currentX, yRect - 22);
-  
-  Percentage droveAlonePercent = new Percentage( stateArray ,"DroveAlone");
-  List <StatePercent> droveAloneList = droveAlonePercent.calculatePercentage(percent);
-  
-  
-  for(int i = 0; i < 3; i++){
-      fill(0);
-      String stateInitials = droveAloneList.get(i).state;
-      text(stateInitials, currentX,yRect - 5);
-      fill(255);
-      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * droveAloneList.get(i).percent));
-      currentX += rectWidth;
+  for(int i = 0; i < droveAloneList.size(); i++){
+      if(droveAloneList.get(i).percent <= percent && count < 3){
+          count++;
+          fill(0);//for state initials
+          String stateInitials = droveAloneList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering1 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + droveAloneList.get(i).percent*2));
+          if(hovering1){
+             hasSelected = true;
+          }
+          if(hovering1 || selectedState.equals(droveAloneList.get(i).state)){
+            droveAloneList.get(i).selected = true;
+            selectedState = droveAloneList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);
+          }
+          
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + droveAloneList.get(i).percent*2));
+          
+          
+          if(droveAloneList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(droveAloneList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + droveAloneList.get(i).percent*2) + detailsY);
+          }
+          currentX += rectWidth;
+      }
+      
   } 
-  
-  
+  println(currentX);
+  currentX = 108;
   currentX += xIncrement;
   
   //Car pooled
+  count = 0;
   String text2 = "Car Pooled";
   textSize(12);
   stroke(0);
   fill(0);
   text(text2, currentX, yRect - 22);
   
-  Percentage CarPooledPercent = new Percentage( stateArray ,"CarPooled");
-  List <StatePercent> CarPooledList = CarPooledPercent.calculatePercentage(percent);
-  
   for(int i = 0; i < 3; i++){
-      fill(0);
-      String stateInitials = CarPooledList.get(i).state;
-      text(stateInitials, currentX,yRect - 5);
-      fill(255);
-      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * CarPooledList.get(i).percent));
-      currentX += rectWidth;
-  }
+      if(CarPooledList.get(i).percent <= percent && count < 3){
+        count++;
+        fill(0);//for state initials
+        String stateInitials = CarPooledList.get(i).state;
+        text(stateInitials, currentX, yRect - 5);
+              
+        hovering2 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + CarPooledList.get(i).percent*2) );
+        if(hovering2){
+           hasSelected = true;
+        }
+        if(hovering2 || selectedState.equals(CarPooledList.get(i).state)){
+          CarPooledList.get(i).selected = true;
+          selectedState = CarPooledList.get(i).state;
+          fill(0);
+        }
+        else{
+          fill(255);       
   
+        }
+        
+        rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + CarPooledList.get(i).percent*2));
+        
+        if(CarPooledList.get(i).selected){
+          fill(0);
+          DecimalFormat df = new DecimalFormat("#.##");
+          text(df.format(CarPooledList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + CarPooledList.get(i).percent*2) + detailsY);
+        }
+        currentX += rectWidth;
+      }
+  } 
+  println(currentX);
+  currentX = 213;
   currentX += xIncrement;
   
   //public trans
+  count = 0;
   String text3 = "Public Trans";
   textSize(12);
   stroke(0);
   fill(0);
   text(text3, currentX, yRect - 22);
   
-  Percentage PublicTransPercent = new Percentage( stateArray ,"PublicTrans");
-  List <StatePercent> PublicTransList = PublicTransPercent.calculatePercentage(percent);
-  
   for(int i = 0; i < 3; i++){
-      fill(0);
-      String stateInitials = PublicTransList.get(i).state;
-      text(stateInitials, currentX,yRect - 5);
-      fill(255);
-      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * PublicTransList.get(i).percent));
-      currentX += rectWidth;
-  }
+      if(PublicTransList.get(i).percent <= percent && count < 3){
+         count++;
+        fill(0);//for state initials
+        String stateInitials = PublicTransList.get(i).state;
+        text(stateInitials, currentX,yRect - 5);
+              
+        hovering3 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + PublicTransList.get(i).percent*2) );
+        if(hovering3){
+           hasSelected = true;
+        }
+        if(hovering3 || selectedState.equals(PublicTransList.get(i).state)){
+          PublicTransList.get(i).selected = true;
+          selectedState = PublicTransList.get(i).state;
+          fill(0);
+        }
+        else{
+          fill(255);       
+        }
   
+        rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + PublicTransList.get(i).percent*2));
+        
+        if(PublicTransList.get(i).selected){
+          fill(0);
+          DecimalFormat df = new DecimalFormat("#.##");
+          text(df.format(PublicTransList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + PublicTransList.get(i).percent*2) + detailsY);
+        }
+        currentX += rectWidth;
+      }
+  } 
+  println(currentX);
+  currentX = 318;
   currentX += xIncrement;
   
   //walked
@@ -266,19 +403,40 @@ void doPercentage(){
   stroke(0);
   fill(0);
   text(text4, currentX, yRect - 22);
-  
-  Percentage WalkedPercent = new Percentage( stateArray ,"Walked");
-  List <StatePercent> WalkedList = WalkedPercent.calculatePercentage(percent);
+   count = 0; 
+ 
   
   for(int i = 0; i < 3; i++){
-      fill(0);
-      String stateInitials = WalkedList.get(i).state;
-      text(stateInitials, currentX,yRect - 5);
-      fill(255);
-      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * WalkedList.get(i).percent));
-      currentX += rectWidth;
-  }
-  
+      if(WalkedList.get(i).percent <= percent && count < 3){
+        count++;
+          fill(0);//for state initials
+          String stateInitials = WalkedList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering4 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + WalkedList.get(i).percent*2) );
+          if(hovering4){
+             hasSelected = true;
+          }
+          if(hovering4 || selectedState.equals(WalkedList.get(i).state)){
+            WalkedList.get(i).selected = true;
+            selectedState = WalkedList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);       
+          }
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + WalkedList.get(i).percent*2));
+          
+          if(WalkedList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(WalkedList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + WalkedList.get(i).percent*2) + detailsY);
+          }
+          currentX += rectWidth;
+      }
+  } 
+  println(currentX);
+  currentX = 423;
   currentX += xIncrement;
   
   //other
@@ -287,19 +445,41 @@ void doPercentage(){
   stroke(0);
   fill(0);
   text(text5, currentX, yRect - 22);
+  count = 0;
   
-  Percentage OtherPercent = new Percentage( stateArray ,"Other");
-  List <StatePercent> OtherList = OtherPercent.calculatePercentage(percent);
   
   for(int i = 0; i < 3; i++){
-      fill(0);
-      String stateInitials = OtherList.get(i).state;
-      text(stateInitials, currentX,yRect - 5);
-      fill(255);
-      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * OtherList.get(i).percent));
-      currentX += rectWidth;
-  }
-  
+      if(OtherList.get(i).percent <= percent && count < 3){
+          count++;
+          fill(0);//for state initials
+          String stateInitials = OtherList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering5 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + OtherList.get(i).percent*2) );
+          if(hovering5){
+             hasSelected = true;
+          }
+          if(hovering5 || selectedState.equals(OtherList.get(i).state)){
+            OtherList.get(i).selected = true;
+            selectedState = OtherList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);       
+          }
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + OtherList.get(i).percent*2));
+          
+          if(OtherList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(OtherList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + OtherList.get(i).percent*2) + detailsY);
+          }
+          currentX += rectWidth;
+          
+      }
+  } 
+  println(currentX);
+  currentX = 528;
   currentX += xIncrement;
   
   //Home
@@ -308,22 +488,323 @@ void doPercentage(){
   stroke(0);
   fill(0);
   text(text6, currentX, yRect - 22);
-  
-  Percentage HomePercent = new Percentage( stateArray ,"Other");
-  List <StatePercent> HomeList = HomePercent.calculatePercentage(percent);
+  count = 0;
+ 
   
   for(int i = 0; i < 3; i++){
-      fill(0);
-      String stateInitials = HomeList.get(i).state;
-      text(stateInitials, currentX,yRect - 5);
-      fill(255);
-      rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight * HomeList.get(i).percent));
-      currentX += rectWidth;
+      if(HomeList.get(i).percent <= percent && count < 3){
+          count++;
+          fill(0);//for state initials
+          String stateInitials = HomeList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering6 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + HomeList.get(i).percent*2) );
+          if(hovering6){
+             hasSelected = true;
+          }
+          if(hovering6 || selectedState.equals(HomeList.get(i).state)){
+            HomeList.get(i).selected = true;
+            selectedState = HomeList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);       
+          }
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + HomeList.get(i).percent*2));
+          
+          if(HomeList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(HomeList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + HomeList.get(i).percent*2) + detailsY);
+          }
+          currentX += rectWidth;
+          
+      }
+  } 
+  
+  if(hasSelected == false){
+    selectedState = "";
   }
   
   
+  //println("----------------------------------");
 
+  }
+  
+  
+  
+  //numbers mode
+  else{
+    droveAloneList = droveAlonePercent.calculateNumbers(percent);
+    CarPooledList = CarPooledPercent.calculateNumbers(percent);
+    PublicTransList = PublicTransPercent.calculateNumbers(percent);
+    WalkedList = WalkedPercent.calculateNumbers(percent);
+    HomeList = HomePercent.calculateNumbers(percent);
+    OtherList = OtherPercent.calculateNumbers(percent);
+    
+    int divided = 60000;
+    
+    //Drove Alone
+  String text1 = "Drove Alone";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text1, currentX, yRect - 22);
+  for(int i = 0; i < droveAloneList.size(); i++){
+      if(droveAloneList.get(i).percent <= percent && count < 3){
+          count++;
+          fill(0);//for state initials
+          String stateInitials = droveAloneList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering1 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + droveAloneList.get(i).percent / divided));
+          if(hovering1){
+             hasSelected = true;
+          }
+          if(hovering1 || selectedState.equals(droveAloneList.get(i).state)){
+            droveAloneList.get(i).selected = true;
+            selectedState = droveAloneList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);
+          }
+          
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + droveAloneList.get(i).percent/ divided));
+          
+          
+          if(droveAloneList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(droveAloneList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + droveAloneList.get(i).percent/ divided) + detailsY);
+          }
+          currentX += rectWidth;
+      }
+      
+  } 
+  println(currentX);
+  currentX = 108;
+  currentX += xIncrement;
+  
+  //Car pooled
+  count = 0;
+  String text2 = "Car Pooled";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text2, currentX, yRect - 22);
+  
+  for(int i = 0; i < 3; i++){
+      if(CarPooledList.get(i).percent <= percent && count < 3){
+        count++;
+        fill(0);//for state initials
+        String stateInitials = CarPooledList.get(i).state;
+        text(stateInitials, currentX, yRect - 5);
+              
+        hovering2 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + CarPooledList.get(i).percent/ divided) );
+        if(hovering2){
+           hasSelected = true;
+        }
+        if(hovering2 || selectedState.equals(CarPooledList.get(i).state)){
+          CarPooledList.get(i).selected = true;
+          selectedState = CarPooledList.get(i).state;
+          fill(0);
+        }
+        else{
+          fill(255);       
+  
+        }
+        
+        rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + CarPooledList.get(i).percent/ divided));
+        
+        if(CarPooledList.get(i).selected){
+          fill(0);
+          DecimalFormat df = new DecimalFormat("#.##");
+          text(df.format(CarPooledList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + CarPooledList.get(i).percent/ divided) + detailsY);
+        }
+        currentX += rectWidth;
+      }
+  } 
+  println(currentX);
+  currentX = 213;
+  currentX += xIncrement;
+  
+  //public trans
+  count = 0;
+  String text3 = "Public Trans";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text3, currentX, yRect - 22);
+  
+  for(int i = 0; i < 3; i++){
+      if(PublicTransList.get(i).percent <= percent && count < 3){
+         count++;
+        fill(0);//for state initials
+        String stateInitials = PublicTransList.get(i).state;
+        text(stateInitials, currentX,yRect - 5);
+              
+        hovering3 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + PublicTransList.get(i).percent/ divided) );
+        if(hovering3){
+           hasSelected = true;
+        }
+        if(hovering3 || selectedState.equals(PublicTransList.get(i).state)){
+          PublicTransList.get(i).selected = true;
+          selectedState = PublicTransList.get(i).state;
+          fill(0);
+        }
+        else{
+          fill(255);       
+        }
+  
+        rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + PublicTransList.get(i).percent/ divided));
+        
+        if(PublicTransList.get(i).selected){
+          fill(0);
+          DecimalFormat df = new DecimalFormat("#.##");
+          text(df.format(PublicTransList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + PublicTransList.get(i).percent/ divided) + detailsY);
+        }
+        currentX += rectWidth;
+      }
+  } 
+  println(currentX);
+  currentX = 318;
+  currentX += xIncrement;
+  
+  //walked
+  String text4 = "Walked";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text4, currentX, yRect - 22);
+   count = 0; 
+ 
+  
+  for(int i = 0; i < 3; i++){
+      if(WalkedList.get(i).percent <= percent && count < 3){
+        count++;
+          fill(0);//for state initials
+          String stateInitials = WalkedList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering4 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + WalkedList.get(i).percent/ divided) );
+          if(hovering4){
+             hasSelected = true;
+          }
+          if(hovering4 || selectedState.equals(WalkedList.get(i).state)){
+            WalkedList.get(i).selected = true;
+            selectedState = WalkedList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);       
+          }
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + WalkedList.get(i).percent/ divided));
+          
+          if(WalkedList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(WalkedList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + WalkedList.get(i).percent/ divided) + detailsY);
+          }
+          currentX += rectWidth;
+      }
+  } 
+  println(currentX);
+  currentX = 423;
+  currentX += xIncrement;
+  
+  //other
+  String text5 = "Other";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text5, currentX, yRect - 22);
+  count = 0;
+  
+  
+  for(int i = 0; i < 3; i++){
+      if(OtherList.get(i).percent <= percent && count < 3){
+          count++;
+          fill(0);//for state initials
+          String stateInitials = OtherList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering5 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + OtherList.get(i).percent/ divided) );
+          if(hovering5){
+             hasSelected = true;
+          }
+          if(hovering5 || selectedState.equals(OtherList.get(i).state)){
+            OtherList.get(i).selected = true;
+            selectedState = OtherList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);       
+          }
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + OtherList.get(i).percent/ divided));
+          
+          if(OtherList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(OtherList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + OtherList.get(i).percent/ divided) + detailsY);
+          }
+          currentX += rectWidth;
+          
+      }
+  } 
+  println(currentX);
+  currentX = 528;
+  currentX += xIncrement;
+  
+  //Home
+  String text6 = "Home";
+  textSize(12);
+  stroke(0);
+  fill(0);
+  text(text6, currentX, yRect - 22);
+  count = 0;
+ 
+  
+  for(int i = 0; i < 3; i++){
+      if(HomeList.get(i).percent <= percent && count < 3){
+          count++;
+          fill(0);//for state initials
+          String stateInitials = HomeList.get(i).state;
+          text(stateInitials, currentX,yRect - 5);
+                
+          hovering6 = overRect(currentX, yRect, rectWidth, (int)(rectDefaultHeight + HomeList.get(i).percent/ divided) );
+          if(hovering6){
+             hasSelected = true;
+          }
+          if(hovering6 || selectedState.equals(HomeList.get(i).state)){
+            HomeList.get(i).selected = true;
+            selectedState = HomeList.get(i).state;
+            fill(0);
+          }
+          else{
+            fill(255);       
+          }
+          rect(currentX, yRect, rectWidth, (float)(rectDefaultHeight + HomeList.get(i).percent/ divided));
+          
+          if(HomeList.get(i).selected){
+            fill(0);
+            DecimalFormat df = new DecimalFormat("#.##");
+            text(df.format(HomeList.get(i).percent) + "%",currentX,yRect +  (int)(rectDefaultHeight + HomeList.get(i).percent/ divided) + detailsY);
+          }
+          currentX += rectWidth;
+          
+      }
+  } 
+  
+  if(hasSelected == false){
+    selectedState = "";
+  }
+  //println("----------------------------------");
+  }
 }
+
+
+
 
 void draw(){
   background(255);

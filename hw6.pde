@@ -1,7 +1,5 @@
 import controlP5.*;
 import java.util.List;
-import org.gicentre.treemappa.*;
-import org.gicentre.utils.colour.*;
 
 
 ControlP5 cp5;
@@ -21,6 +19,7 @@ int percent;
 void setup(){
   size(700, 680,P3D);
   cp5 = new ControlP5(this);
+  totalTreeMap = new PTreeMappa(this);
   s = "How\nPeople\nGet\nTo\nWork";
   
   stateMenu = cp5.addDropdownList("myList-d1").setPosition(500, 40);
@@ -32,62 +31,64 @@ void setup(){
   getData();
   
   addMouseWheelListener();
-  createTreemap(); //<>//
-  System.out.println("test"); //<>//
+  //createTreemap();
+  //createRectangle();
+  System.out.println("test");
   fill(0);
   textSize(40);
   
 }
 
-void createTreemap(){  
-  totalTreeMap = new PTreeMappa(this);
-  //totalTreeMap.readData("CommuterData.csv");
+void createRectangle(int stateIndex){
+  fill(255);
+  rect(160, 60, 500, 300);
   
-  //State current = stateArray.get(stateIndex);
-  State USA = stateArray.get(0);
+  State USA = stateArray.get(2);
+  fill(0);
+  text(USA.state, 270, 40);
   int commute = USA.droveAlone + USA.carPooled + USA.publicTransport;
   int noCar = USA.walked + USA.other + USA.workedAtHome;
   int total = USA.totalWorkers;
-  double travelTime = USA.meanMinutesToWork; 
+  double travelTime = USA.meanMinutesToWork;
   
-  //root node of the state
-  TreeMapNode testUSA = new TreeMapNode(USA.abbreviation, 0.0, (float)total, (float)color(255,255,100));
+  float commutePercent = (float)commute/total;
+  float noCarPercent = (float)noCar/total;
   
-  //first two children
-  TreeMapNode cars = new TreeMapNode("Driving", 1.0, (float)commute, (float)color(100, 255, 255));
-  TreeMapNode noCarNode = new TreeMapNode("Not Driving", 1.0, (float)noCar, (float)color(255, 100, 100));
-  
-  //three children under cars node
-  TreeMapNode droveAlone = new TreeMapNode("Drove Alone", 0.0, (float)USA.droveAlone, (float)color(30, 30, 30));
-  TreeMapNode carPool = new TreeMapNode("Carpooled", 0.0, (float)USA.carPooled, (float)color(20, 20, 20));
-  TreeMapNode publicTrans = new TreeMapNode("Public Transportation", 0.0, (float)USA.publicTransport, (float)color(30, 30, 30));
-  
-  //three children under noCars node
-  TreeMapNode walk = new TreeMapNode("Walked", 0.0, (float)USA.walked, (float)color(70, 70, 70));
-  TreeMapNode other = new TreeMapNode("Other", 0.0, (float)USA.other, (float)color(80, 80, 80));
-  TreeMapNode home = new TreeMapNode("Worked at Home", 0.0, (float)USA.workedAtHome, (float)color(80, 80, 80));
-  
-  cars.add(droveAlone);
-  cars.add(carPool);
-  cars.add(publicTrans);
-  
-  noCarNode.add(walk);
-  noCarNode.add(other);
-  noCarNode.add(home);
-  
-  testUSA.add(cars);
-  testUSA.add(noCarNode);
-  totalTreeMap.getTreeMappa().setRoot(testUSA);
-  totalTreeMap.getTreeMappa().buildTreeMap();
+  float driveAlone = (float)USA.droveAlone/commute;
+  float carPool = (float)USA.carPooled/commute;
+  float pub = (float)USA.publicTransport/commute;
+  float walk = (float)USA.walked/noCar;
+  float other = (float)USA.other/noCar;
+  float home = (float)USA.workedAtHome/noCar;
   
   
-//  totalTreeMap.getTreeMapPanel().setBorders(4);
-//  totalTreeMap.getTreeMapPanel().setBorder(0,0);
   
-  //totalTreeMap.draw(); 
+  rect(160, 60, commutePercent*500, 300);
   
+  rect(160 + commutePercent*500, 60, noCarPercent*500, 300);
+  fill(0);
+  text("Commuting", 160, 55);
+  text("No Car", 160+ commutePercent*500, 55);
+  
+  fill(255,0,0);
+  rect(160, 60, commutePercent*500, driveAlone*300);
+  rect(160, 60+ driveAlone*300, commutePercent*500, carPool*300);
+  rect(160, 60+ driveAlone*300 + carPool*300, commutePercent*500, pub*300);
+  
+  fill(0, 255, 0);
+  rect(160 + commutePercent*500, 60, noCarPercent*500, walk*300);
+  rect(160 + commutePercent*500, 60 + walk*300, noCarPercent*500, other*300);
+  rect(160 + commutePercent*500, 60 + walk*300 + other*300, noCarPercent*500, home*300);  
+  
+  fill(0);
+  text("Drive Alone", 155, 60 + (driveAlone*300)/2);
+  text("Carpool", 155, 60 + driveAlone*300 + (carPool*300)/2);
+  text("Public Transit", 155, 60 + driveAlone*300 + carPool*300 + (pub*300)/2);
+  
+  text("Walk", 160 + commutePercent*500, 60 + (walk*300)/2);
+  text("Other", 160 + commutePercent*500, 60 + walk*300 + (other*300)/2);
+  text("Home", 160 + commutePercent*500, 60 + walk*300 + other*300 + (home*300)/2);
 }
-
 
 //dropdown menu
 void customize(DropdownList ddl, ArrayList<State> states) {
@@ -310,4 +311,5 @@ void draw(){
   text(s, 5,50); 
   
   doPercentage();
+  createRectangle(stateIndex);
 }
